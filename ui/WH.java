@@ -14,8 +14,11 @@ import linh.model.Product;
 
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
@@ -336,11 +339,6 @@ public class WH extends JFrame {
 
 	}
 
-	//
-	//	private void panelTabAdminInvoice() {
-	//		JPanel pnInvoice = new JPanel();
-	//		tabAdmin.add(pnInvoice,"Create invoices");
-	//	}
 
 	private void panelTabAdminCheckProduct() {
 		JPanel pnCheck = new JPanel();
@@ -994,9 +992,11 @@ public class WH extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				//radom Id
+			
 				
 				try {
+					Integer.parseInt(txtRegPhone.getText());
+					//random Id
 					String strID;
 					Random generator = new Random();
 					int id= Math.abs(generator.nextInt());
@@ -1004,7 +1004,6 @@ public class WH extends JFrame {
 					Client client= new Client(strID,txtRegName.getText(),txtRegPhone.getText(),
 							txtRegAddress.getText());
 					boolean i=true;
-				    Integer.parseInt(txtRegPhone.getText());
 					for (Client cl: listClient)
 						if (client.getPhone().equalsIgnoreCase(cl.getPhone()))
 						{
@@ -1238,6 +1237,7 @@ public class WH extends JFrame {
 									if (prbuy.getId().equalsIgnoreCase(pr.getId()))
 										pr.setNumber((Integer.parseInt(pr.getNumber())-Integer.parseInt(prbuy.getNumber()))+"");
 							}
+							saveBill(cl);
 							listCart.clear();
 							pnInfoThanks.setVisible(true);
 							pnInfoClient.setVisible(false);
@@ -1253,6 +1253,40 @@ public class WH extends JFrame {
 			
 		});
 	}
+	protected void saveBill(Client cl) {
+		// TODO Auto-generated method stub
+		JFileChooser chooser= new JFileChooser();
+		if (chooser.showSaveDialog(null)==JFileChooser.APPROVE_OPTION);
+		{
+			String data= "sfs";
+			try {
+				int sum=0;
+				FileOutputStream fos= new FileOutputStream(chooser.getSelectedFile());
+				OutputStreamWriter osw= new OutputStreamWriter(fos,"UTF-8");
+				osw.write("			 RECIEPT:\n ");
+				osw.write(" name: "+cl.getNameClient()+"\n");
+				osw.write(" phone: "+cl.getPhone()+"\n");
+				osw.write(" id: "+cl.getIdClient()+"\n");
+				osw.write(" address: "+cl.getAddress()+"\n");
+				osw.write(" ======================================================================"+"\n");
+				osw.write("Product--------Quantity----Price(Rub)-----sum(rub)\n");
+				for (Product pr:listCart)
+				{
+					int total= Integer.parseInt(pr.getNumber())*Integer.parseInt(pr.getPrice());
+					sum+=total;
+					osw.write(pr.getNameProduct()+"--------"+pr.getPrice()+"--------"+pr.getNumber()+"-------------"+(total)+"\n");
+				}
+				osw.write("                                                                         TOTAL: "+sum);
+				osw.close();
+				fos.close();
+				JOptionPane.showMessageDialog(null, "saved");
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "can't saved");
+			}
+		}
+		
+	}
+
 	protected void showListClient(Client client) {
 		// TODO Auto-generated method stub
 		Vector<String> vec= new Vector<String>();

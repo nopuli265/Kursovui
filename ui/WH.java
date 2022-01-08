@@ -26,48 +26,54 @@ import java.util.Vector;
 
 
 public class WH extends JFrame {
+	private Container contentPane;
+	private JTabbedPane tbp;
+	private JTabbedPane tabAdmin;
+
 	public GroupProducts iphone,samsung, nokia;
 	ArrayList<Product> listProduct=new ArrayList<Product>();
 	ArrayList<Product> listSavePR=new ArrayList<Product>();
 	ArrayList<Product> listCart=new ArrayList<Product>();
+	ArrayList<GroupProducts> groupPr;
 
+	private Product product;
+	private Product productI;
+	private Product productS;
+	private Product productN;
+	
+	
 	int year;
 	int sttPr=1;
 	ArrayList<Client> listClient=new ArrayList<Client>();
-	ArrayList<GroupProducts> groupPr;
-	private JPanel pnHome;
-	private Container contentPane;
+	
 	private JTextField txtIDPr;
 	private JTextField txtNamePr;
 	private JTextField txtNumberOfPr;
 	private JTextField txtPrice;
 	private JTextField txtMFG;
 	private JTextField txtEXP;
+	
 	private JComboBox jcbTypePr;
-	private JTable jtable;
-	private DefaultTableModel table=null;
+	private JTable jtableImport;
+	private DefaultTableModel tableImport=null;
+	
+	
 	private DefaultTableModel tableCart=null;
 	private JTextField txtNameCl;
 	private JTextField txtMail;
 	private JTextField txtAddress;
 	private JTextField txtPhone;
+	
 	private JTextField txtFindSe;
-	private JTextField txtNumberSe;
-	private JLabel txtPrSe;
-	private JLabel txtIDPrSe;
-	private JLabel txtNumPrSe;
-	private JLabel txtPricePrSe;
-	private JLabel txtMfgSe;
-	private JLabel txtExpSe;
+	private JTextField txtPriceSe;
+	private JTextField txtTypeSe;
+	
 	private JButton btnBuyPr;
-	private JPanel pnTitle;
-	private JTabbedPane tbp;
-	private JPanel pnAdmin;
-	private JTabbedPane tabAdmin;
+	
 	private JButton btnImport;
 	private JButton btnSavePr ;
 	private JButton btnDeletePr;
-	private JButton btnShowAll;
+
 	private JTextField txtCheckName;
 	private JTable tableCheck;
 	private JTextField txtCheckID;
@@ -109,19 +115,17 @@ public class WH extends JFrame {
 	private JPanel pnInfoThanks;
 	private JTextField txtSum;
 	int sum=0;
-	private Product product;
 
-	private Product productI;
-
-	private Product productS;
-
-	private Product productN;
 
 	private JPanel pnFindSe;
 
 	private JPanel pnInfo;
 
 	private JPanel pnCart;
+
+	private DefaultTableModel dftCheckBuy;
+	private JTable tableCheckBuy;
+	protected boolean flatSe=false;
 
 
 
@@ -179,7 +183,7 @@ public class WH extends JFrame {
 		contentPane= getContentPane();
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		pnTitle = new JPanel();
+		JPanel pnTitle = new JPanel();
 		pnTitle.setForeground(new Color(0, 0, 0));
 		pnTitle.setBackground(new Color(25, 25, 112));
 		pnTitle.setBounds(0, 0,950, 60);
@@ -197,7 +201,7 @@ public class WH extends JFrame {
 		contentPane.add(tbp);
 	}
 	public void panelTabHome() {
-		pnHome= new JPanel();
+		JPanel pnHome= new JPanel();
 		tbp.add("Home", pnHome);
 		pnHome.setLayout(null);
 
@@ -217,7 +221,7 @@ public class WH extends JFrame {
 		pnHome.add(jlabImage);
 	}
 	public void panelTabAdmin() {
-		pnAdmin= new JPanel();
+		JPanel pnAdmin= new JPanel();
 		tbp.add("ADMIN", pnAdmin);
 		pnAdmin.setLayout(null);
 		tabAdmin = new JTabbedPane(JTabbedPane.LEFT);
@@ -390,21 +394,18 @@ public class WH extends JFrame {
 		btnCheck.setBounds(75, 200, 89, 20);
 		pnCheck.add(btnCheck);
 
-		//		btnReset = new JButton("Reset");
-		//		btnReset.setBounds(360, 270, 89, 20);
-		//		pnCheck.add(btnReset);
-		//		pnCheck.add(panelFind);
-
 		btnDelete= new JButton("Delete");
 		btnDelete.setBounds(450, 270, 89, 20);
 		pnCheck.add(btnDelete);
 		pnCheck.add(panelFind);
 
+		//table
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setBounds(240, 25, 480, 230);
 		pnCheck.add(scrollPane);
+
 
 		dftCheck=new DefaultTableModel(new Object[][] {},
 				new String[] {
@@ -508,22 +509,22 @@ public class WH extends JFrame {
 		pnAdd.add(txtEXP);
 
 
-		table= new DefaultTableModel();
-		table.addColumn("ID");
-		table.addColumn("Name Product");
-		table.addColumn("Type Product");
-		table.addColumn("Quantity");
-		table.addColumn("Price(Rub)");
-		table.addColumn("MFG");
-		table.addColumn("EXP");
-		jtable= new JTable(table);
+		tableImport= new DefaultTableModel();
+		tableImport.addColumn("ID");
+		tableImport.addColumn("Name Product");
+		tableImport.addColumn("Type Product");
+		tableImport.addColumn("Quantity");
+		tableImport.addColumn("Price(Rub)");
+		tableImport.addColumn("MFG");
+		tableImport.addColumn("EXP");
+		jtableImport= new JTable(tableImport);
 
 		JScrollPane jscTabelAdd = new JScrollPane();
 		jscTabelAdd.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		jscTabelAdd.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		jscTabelAdd.setBounds(34, 242, 650, 204);
 		pnAdd.add(jscTabelAdd);
-		jscTabelAdd.setViewportView(jtable);
+		jscTabelAdd.setViewportView(jtableImport);
 
 		btnImport = new JButton("Add Product");
 		btnImport.setBounds(590, 98, 130, 23);
@@ -558,87 +559,58 @@ public class WH extends JFrame {
 		//find product
 		pnFindSe = new JPanel();
 		pnFindSe.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Find", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(255, 0, 0)));
-		pnFindSe.setBounds(250, 80, 400, 100);
+		pnFindSe.setBounds(280, 50, 300, 150);
 
 		pnClient.add(pnFindSe);
 		pnFindSe.setLayout(null);
 
 		JLabel jlabProductFind = new JLabel("Product:");
-		jlabProductFind.setBounds(33, 24, 75, 14);
+		jlabProductFind.setBounds(33, 35, 75, 14);
 		pnFindSe.add(jlabProductFind);
 		txtFindSe = new JTextField(10);
-		txtFindSe.setBounds(118, 22, 140, 17);
+		txtFindSe.setBounds(118, 35, 140, 17);
 		pnFindSe.add(txtFindSe);
 
-		JLabel jlabNumberBuy = new JLabel("Quantity:");
-		jlabNumberBuy.setBounds(30, 53, 98, 14);
-		pnFindSe.add(jlabNumberBuy);
-		txtNumberSe = new JTextField(10);
-		txtNumberSe.setBounds(118, 50, 140, 17);
-		pnFindSe.add(txtNumberSe);
+		JLabel jlabTypeBuy = new JLabel("Type:");
+		jlabTypeBuy.setBounds(50, 65, 98, 14);
+		pnFindSe.add(jlabTypeBuy);
+		txtTypeSe = new JTextField(10);
+		txtTypeSe.setBounds(118, 65, 140, 17);
+		pnFindSe.add(txtTypeSe);
 
-		btnFindBuy = new JButton("Find");
-		btnFindBuy.setBounds(290, 35, 70, 23);
-		pnFindSe.add(btnFindBuy);
+		JLabel jlabPriceBuy = new JLabel("Price:");
+		jlabPriceBuy.setBounds(45, 95, 98, 14);
+		pnFindSe.add(jlabPriceBuy);
+		txtPriceSe = new JTextField(10);
+		txtPriceSe.setBounds(118, 95, 140, 17);
+		pnFindSe.add(txtPriceSe);
 
 		//information product
 		pnInfo = new JPanel();
 		pnInfo.setBorder(new TitledBorder(null, "Product information", TitledBorder.CENTER, TitledBorder.TOP, null, new Color(255, 0, 0)));
-		pnInfo.setBounds(450, 30, 400, 225);
+		pnInfo.setBounds(330, 30, 560, 225);
 		pnClient.add(pnInfo);
 		pnInfo.setLayout(null);
 		pnInfo.setVisible(false);
 
-		JLabel jlabProductSelected = new JLabel("Product:");
-		jlabProductSelected.setHorizontalAlignment(SwingConstants.CENTER);
-		jlabProductSelected.setBounds(10, 27, 100, 14);
-		pnInfo.add(jlabProductSelected);
-		txtPrSe = new JLabel();
-		txtPrSe.setBounds(180, 25, 232, 17);
-		pnInfo.add(txtPrSe);
+		//table
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setBounds(30, 40, 500, 140);
+		pnInfo.add(scrollPane);
 
-		JLabel jlabIDSelected = new JLabel("ID product:");
-		jlabIDSelected.setHorizontalAlignment(SwingConstants.CENTER);
-		jlabIDSelected.setBounds(10, 52, 100, 14);
-		pnInfo.add(jlabIDSelected);
-		txtIDPrSe = new JLabel();
-		txtIDPrSe.setBounds(180, 52, 232, 17);
-		pnInfo.add(txtIDPrSe);
 
-		JLabel jlabNumProductSelected = new JLabel("Quantity in stock:");
-		jlabNumProductSelected.setHorizontalAlignment(SwingConstants.CENTER);
-		jlabNumProductSelected.setBounds(10, 82, 100, 14);
-		pnInfo.add(jlabNumProductSelected);
-		txtNumPrSe = new JLabel();
-		txtNumPrSe.setBounds(180, 80, 232, 17);
-		pnInfo.add(txtNumPrSe);
-
-		JLabel jlabPriceSelected = new JLabel("Price:");
-		jlabPriceSelected.setHorizontalAlignment(SwingConstants.CENTER);
-		jlabPriceSelected.setBounds(10, 113, 100, 14);
-		pnInfo.add(jlabPriceSelected);
-		txtPricePrSe = new JLabel();
-		txtPricePrSe.setBounds(180, 111, 232, 17);
-		pnInfo.add(txtPricePrSe);
-
-		JLabel jlabnsx = new JLabel("MFG:");
-		jlabnsx.setHorizontalAlignment(SwingConstants.CENTER);
-		jlabnsx.setBounds(10, 141, 100, 14);
-		pnInfo.add(jlabnsx);
-		txtMfgSe = new JLabel();
-		txtMfgSe.setBounds(180, 139, 232, 17);
-		pnInfo.add(txtMfgSe);
-
-		JLabel jlabHSD = new JLabel("EXP:");
-		jlabHSD.setHorizontalAlignment(SwingConstants.CENTER);
-		jlabHSD.setBounds(10, 166, 100, 14);
-		pnInfo.add(jlabHSD);
-		txtExpSe = new JLabel();
-		txtExpSe.setBounds(180, 165, 232, 17);
-		pnInfo.add(txtExpSe);
+		dftCheckBuy=new DefaultTableModel(new Object[][] {},
+				new String[] {
+						"ID ", "Type", "Name ", "Quantity in stock", "Price(Rub)", "MFG", "EXP", "Status"
+		}
+				);
+		tableCheckBuy = new JTable(dftCheckBuy);
+		scrollPane.setViewportView(tableCheckBuy);
 
 		btnAddCart = new JButton("Add to cart");
-		btnAddCart.setBounds(155, 190, 100, 23);
+		btnAddCart.setBounds(200, 190, 100, 23);
 		pnInfo.add(btnAddCart);
 
 		JSeparator separator = new JSeparator();
@@ -750,7 +722,7 @@ public class WH extends JFrame {
 
 	}
 
-	
+
 	private void addEvents() {
 
 		for (GroupProducts i:groupPr)
@@ -794,7 +766,7 @@ public class WH extends JFrame {
 					}
 				if(i==true)
 				{
-					table.addRow(vec);
+					tableImport.addRow(vec);
 					txtIDPr.setText("");
 					txtNamePr.setText("");
 					txtNumberOfPr.setText("");
@@ -811,23 +783,23 @@ public class WH extends JFrame {
 				listSavePR.addAll(listProduct); 
 				JOptionPane.showMessageDialog(null, "saved");
 				listProduct.clear();
-				table.setRowCount(0);
+				tableImport.setRowCount(0);
 			}
 		});
 		btnDeletePr.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//sửa lỗi nếu không chọn thì không thực hi
-				if(jtable.getSelectedRow()==-1)
+				if(jtableImport.getSelectedRow()==-1)
 					return;
 				else
 				{
-					int row= jtable.getSelectedRow();
+					int row= jtableImport.getSelectedRow();
 					int ret = JOptionPane.showConfirmDialog(null, "do you want to delete the product?",
 							"delete", JOptionPane.YES_NO_OPTION);
 					if (ret==JOptionPane.YES_OPTION)
 					{
-						table.removeRow(row);
+						tableImport.removeRow(row);
 						listProduct.remove(row);
 					}
 					else
@@ -850,7 +822,7 @@ public class WH extends JFrame {
 				{
 					dftCheck.setRowCount(0);
 					for (int i=0; i<listSavePR.size();i++)
-						addTableValue("Good",i);
+						addTableValue(dftCheck,"Good",i);
 				}
 				//check by exp			
 
@@ -862,7 +834,7 @@ public class WH extends JFrame {
 					for (int i=0; i<listSavePR.size();i++)
 						if (Integer.parseInt(listSavePR.get(i).getExp())<=year) 
 						{
-							addTableValue("Out of date!",i);
+							addTableValue(dftCheck,"Out of date!",i);
 							s+=1;
 						}
 					if (s==0)
@@ -878,7 +850,7 @@ public class WH extends JFrame {
 					for (int i=0; i<listSavePR.size();i++)
 						if (Integer.parseInt(listSavePR.get(i).getNumber())<50)
 						{
-							addTableValue("Quantity less than 50 must be added",i);
+							addTableValue(dftCheck,"Quantity less than 50 must be added",i);
 							s+=1;
 						}
 					if (s==0)
@@ -944,17 +916,17 @@ public class WH extends JFrame {
 				{
 					if (txtCheckID.getText().equalsIgnoreCase(listSavePR.get(i).getId()))
 					{
-						addTableValue("product available",i);
+						addTableValue(dftCheck,"product available",i);
 						s+=1;
 					}
 					else if (txtCheckName.getText().equalsIgnoreCase(listSavePR.get(i).getNameProduct()))
 					{
-						addTableValue("product available",i);
+						addTableValue(dftCheck,"product available",i);
 						s+=1;
 					}
 					else if (txtCheckType.getText().equalsIgnoreCase(listSavePR.get(i).getGroupPr().getNameGroup()))
 					{
-						addTableValue("product available",i);
+						addTableValue(dftCheck,"product available",i);
 						s+=1;
 					}
 				}
@@ -992,8 +964,8 @@ public class WH extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-			
-				
+
+
 				try {
 					Integer.parseInt(txtRegPhone.getText());
 					//random Id
@@ -1011,19 +983,19 @@ public class WH extends JFrame {
 							i=false;
 							break;
 						}
-					
+
 					if(i==true)
 					{
 						listClient.add(client);
 						JOptionPane.showMessageDialog(null, "registered successfully");
-						
+
 						//add list clients in the jtree
-						 nodeCl = new DefaultMutableTreeNode(client);
+						nodeCl = new DefaultMutableTreeNode(client);
 						DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
 						root = (DefaultMutableTreeNode)model.getRoot();
 						root.add(nodeCl);
 						model.reload(root);//important
-						
+
 						txtRegAddress.setText("");
 						txtRegName.setText("");
 						txtRegPhone.setText("");	
@@ -1031,7 +1003,7 @@ public class WH extends JFrame {
 				} catch (NumberFormatException e1) {
 					JOptionPane.showMessageDialog(null, "phone is not numbers");
 				}
-			
+
 
 			}});
 
@@ -1064,7 +1036,7 @@ public class WH extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 				DefaultMutableTreeNode nodeSelected = 
 						(DefaultMutableTreeNode) 
 						tree.getLastSelectedPathComponent();
@@ -1109,37 +1081,70 @@ public class WH extends JFrame {
 			}
 		});
 
-		
-		//client buy
-		btnFindBuy.addActionListener(new ActionListener() {
+		txtTypeSe.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int s=0;
-				
-				for (Product pr: listSavePR)
-				{
-					if (pr.getNameProduct().equalsIgnoreCase(txtFindSe.getText()))
+				// TODO Auto-generated method stub
+				dftCheckBuy.setRowCount(0);
+				for (int i=0; i<listSavePR.size();i++)
+					if (txtTypeSe.getText().equalsIgnoreCase(listSavePR.get(i).getGroupPr().getNameGroup()))
 					{
-						pnFindSe.setBounds(23, 76, 400, 84);
-						pnInfo.setVisible(true);
-						txtPrSe.setText(pr.getNameProduct());
-						txtIDPrSe.setText(pr.getId());
-						txtPricePrSe.setText(pr.getPrice());
-						txtMfgSe.setText(pr.getMfg());
-						txtExpSe.setText(pr.getExp());
-						//txtIDPrSe.setText(pr.getNameProduct());
-						s+=1;
-						if (Integer.parseInt(pr.getNumber())<Integer.parseInt(txtNumberSe.getText()))
-							txtNumPrSe.setText(pr.getNumber()+" (shortage)");
-						else
-							txtNumPrSe.setText(pr.getNumber());
+						addTableValue(dftCheckBuy,"available",i);
+						flatSe=true;
 					}
+				if (flatSe) {
+					pnFindSe.setBounds(23, 45, 280, 170);
+					pnInfo.setVisible(true);
 				}
-				if (s==0) {
-					JOptionPane.showMessageDialog(null, "Not Found Product!");
+				else
+					JOptionPane.showMessageDialog(null, "product not available!");
+			}			
+		});
+
+		txtFindSe.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				dftCheckBuy.setRowCount(0);
+				for (int i=0; i<listSavePR.size();i++)
+					if (txtFindSe.getText().equalsIgnoreCase(listSavePR.get(i).getNameProduct()))
+					{
+						addTableValue(dftCheckBuy,"available",i);
+						flatSe=true;
+					}
+				if (flatSe) {
+					pnFindSe.setBounds(23, 45, 280, 170);
+					pnInfo.setVisible(true);
 				}
+				else
+					JOptionPane.showMessageDialog(null, "product not available!");
 			}
 		});
+
+		txtPriceSe.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				dftCheckBuy.setRowCount(0);
+				for (int i=0; i<listSavePR.size();i++)
+					if (Integer.parseInt(txtPriceSe.getText())>=Integer.parseInt(listSavePR.get(i).getPrice()))
+					{
+						addTableValue(dftCheckBuy,"available",i);
+						flatSe=true;
+					}
+				if (flatSe) {
+					pnFindSe.setBounds(23, 45, 280, 170);
+					pnInfo.setVisible(true);
+				}
+				else
+					JOptionPane.showMessageDialog(null, "product not available!");
+			}
+
+		});
+
 
 		btnAddCart.addActionListener(new ActionListener() {
 
@@ -1148,21 +1153,40 @@ public class WH extends JFrame {
 				pnInfoThanks.setVisible(false);
 				pnCart.setVisible(true);
 
-				Vector<String > vec = new Vector<String>();
-				Product pr = new Product(txtIDPrSe.getText(),txtPrSe.getText(),
-						txtNumberSe.getText(),txtPricePrSe.getText());
-				listCart.add(pr);
-				vec.add((sttPr++)+"");
-				vec.add(txtPrSe.getText());
-				vec.add(txtIDPrSe.getText());
-				vec.add(txtNumberSe.getText());
-				vec.add(txtPricePrSe.getText());
-				vec.add(Integer.parseInt(txtNumberSe.getText())*Integer.parseInt(txtPricePrSe.getText())+"");
-				tableCart.addRow(vec);
+				if (tableCheckBuy.getSelectedRow()==-1)
+					return;
+				else
+				{
+					int row= tableCheckBuy.getSelectedRow();
+					String quantityBuy= JOptionPane.showInputDialog("Quantity: ");
+					if (Integer.parseInt(quantityBuy)>Integer.parseInt(dftCheckBuy.getValueAt(row,3)+""))
+					{
+						int ret= JOptionPane.showConfirmDialog(null,"Only"+ dftCheckBuy.getValueAt(row,3)+
+								" products left in stock!\n Do you want to continue buying?","buy?",JOptionPane.YES_NO_OPTION);
+						if (ret==JOptionPane.YES_OPTION)
+						{
+							quantityBuy= JOptionPane.showInputDialog("Quantity: ");
+						}
+						else
+							return;
+					}
+					Vector<String > vec = new Vector<String>();
+					Product pr = new Product(dftCheckBuy.getValueAt(row,0)+"",dftCheckBuy.getValueAt(row,2)+"",
+							quantityBuy,dftCheckBuy.getValueAt(row,4)+"");
+					listCart.add(pr);
+					vec.add((sttPr++)+"");
+					vec.add(pr.getNameProduct());
+					vec.add(pr.getId());
+					vec.add(pr.getNumber());
+					vec.add(pr.getPrice());
+					vec.add(Integer.parseInt(pr.getNumber())*Integer.parseInt(pr.getPrice())+"");
+					tableCart.addRow(vec);
 
 
-				sum+= Integer.parseInt(txtNumberSe.getText())*Integer.parseInt(txtPricePrSe.getText());
-				txtSum.setText(sum+"");
+					sum+= Integer.parseInt(pr.getNumber())*Integer.parseInt(pr.getPrice());
+					txtSum.setText(sum+"");
+
+				}
 			}
 		});
 
@@ -1223,34 +1247,34 @@ public class WH extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				boolean flat = false;
-					for (Client cl:listClient) {
-						if (cl.getPhone().equalsIgnoreCase(txtPhone.getText()))
-						{
-							flat= true;
-							cl.getPr().addAll(listCart);
-							tableCart.setRowCount(0);
-							for (Product pr : listSavePR)
-							{
-								for (Product prbuy: listCart)
-									if (prbuy.getId().equalsIgnoreCase(pr.getId()))
-										pr.setNumber((Integer.parseInt(pr.getNumber())-Integer.parseInt(prbuy.getNumber()))+"");
-							}
-							saveBill(cl);
-							listCart.clear();
-							pnInfoThanks.setVisible(true);
-							pnInfoClient.setVisible(false);
-							pnCart.setVisible(false);
-							break;
-						}
-					}
-					if (flat==false) {
-						JOptionPane.showMessageDialog(null, "not found our client! please sign up");
-					}
 
+				boolean flat = false;
+				for (Client cl:listClient) {
+					if (cl.getPhone().equalsIgnoreCase(txtPhone.getText()))
+					{
+						flat= true;
+						cl.getPr().addAll(listCart);
+						tableCart.setRowCount(0);
+						for (Product pr : listSavePR)
+						{
+							for (Product prbuy: listCart)
+								if (prbuy.getId().equalsIgnoreCase(pr.getId()))
+									pr.setNumber((Integer.parseInt(pr.getNumber())-Integer.parseInt(prbuy.getNumber()))+"");
+						}
+						saveBill(cl);
+						listCart.clear();
+						pnInfoThanks.setVisible(true);
+						pnInfoClient.setVisible(false);
+						pnCart.setVisible(false);
+						break;
+					}
 				}
-			
+				if (flat==false) {
+					JOptionPane.showMessageDialog(null, "not found our client! please sign up");
+				}
+
+			}
+
 		});
 	}
 	protected void saveBill(Client cl) {
@@ -1284,7 +1308,7 @@ public class WH extends JFrame {
 				JOptionPane.showMessageDialog(null, "can't saved");
 			}
 		}
-		
+
 	}
 
 	protected void showListClient(Client client) {
@@ -1298,7 +1322,7 @@ public class WH extends JFrame {
 		dftClient.addRow(vec);
 
 	}
-	protected void addTableValue(String strOK,int i) {
+	protected void addTableValue(DefaultTableModel dtfTable, String strOK,int i) {
 		// TODO Auto-generated method stub
 
 		Vector<String> vec= new Vector<String>();
@@ -1310,7 +1334,7 @@ public class WH extends JFrame {
 		vec.add(listSavePR.get(i).getMfg());
 		vec.add(listSavePR.get(i).getExp());
 		vec.add(strOK);
-		dftCheck.addRow(vec);
+		dtfTable.addRow(vec);
 	}
 
 

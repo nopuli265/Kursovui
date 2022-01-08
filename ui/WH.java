@@ -31,6 +31,7 @@ public class WH extends JFrame {
 	private JTabbedPane tabAdmin;
 
 	public GroupProducts iphone,samsung, nokia;
+	public GroupProducts gprSelected=null;
 	ArrayList<Product> listProduct=new ArrayList<Product>();
 	ArrayList<Product> listSavePR=new ArrayList<Product>();
 	ArrayList<Product> listCart=new ArrayList<Product>();
@@ -40,92 +41,89 @@ public class WH extends JFrame {
 	private Product productI;
 	private Product productS;
 	private Product productN;
-	
-	
+
+
 	int year;
 	int sttPr=1;
 	ArrayList<Client> listClient=new ArrayList<Client>();
-	
+
+	//admin import product	
 	private JTextField txtIDPr;
 	private JTextField txtNamePr;
 	private JTextField txtNumberOfPr;
 	private JTextField txtPrice;
 	private JTextField txtMFG;
 	private JTextField txtEXP;
-	
+
 	private JComboBox jcbTypePr;
 	private JTable jtableImport;
 	private DefaultTableModel tableImport=null;
-	
-	
-	private DefaultTableModel tableCart=null;
-	private JTextField txtNameCl;
-	private JTextField txtMail;
-	private JTextField txtAddress;
-	private JTextField txtPhone;
-	
-	private JTextField txtFindSe;
-	private JTextField txtPriceSe;
-	private JTextField txtTypeSe;
-	
-	private JButton btnBuyPr;
-	
+
 	private JButton btnImport;
 	private JButton btnSavePr ;
 	private JButton btnDeletePr;
 
-	private JTextField txtCheckName;
-	private JTable tableCheck;
-	private JTextField txtCheckID;
-	private JTable table_1;
-	private JButton btnCheck;
-	private JTree tree;
-	private DefaultMutableTreeNode root;
-	private JTable tableTree;
-	public GroupProducts gprSelected=null;
-	DefaultMutableTreeNode nodeCl=null;
-	Product prImport=null;
-	private JButton btnResetPr;
-	private JTable jtableCart;
-	private JButton btnFindBuy;
-	protected Product prFind;
-	private JTextField txtCheckType;
+	//admin check products	
 	private JComboBox cbbCheck;
+	private JButton btnCheck;
+	private JButton btnDelete;
+	private JButton btnAddCheck;
+	private JTextField txtIDAdd;
+	private JTextField txtQuantityAdd;
+	private JTextField txtCheckType;
+	private JTextField txtCheckName;
+	private JTextField txtCheckID;
 	private DefaultTableModel dftCheck;
-	private JButton btnReset;
+	private JTable tableCheck;
+
+	//admin check client
+	private JButton btnReg;
+	private DefaultTableModel dftClient;
+	private JButton btnClientCheck;
+	private JTree tree;
+	private JTable tableTree;
+	private DefaultMutableTreeNode root;
+	DefaultMutableTreeNode nodeCl=null;
+
 	private JTable tableClient;
 	private JTextField txtCheckClientID;
 	private JTextField txtClientPhone;
 	private JTextField txtRegName;
 	private JTextField txtRegPhone;
 	private JTextField txtRegAddress;
-	private JTextField txtIDAdd;
-	private JTextField txtQuantityAdd;
-	private JButton btnAddCheck;
-	private JButton btnDelete;
-	private JTextField txtRegDate;
-	private JButton btnReg;
-	private DefaultTableModel dftClient;
-	private JButton btnClientCheck;
-	private JButton btnAddCart;
-	private JButton btnOrder;
-	private JButton btnDeleteCart;
-	private JPanel pnInfoClient;
-	private JCheckBox reg;
-	private JPanel pnInfoThanks;
-	private JTextField txtSum;
-	int sum=0;
 
-
+	//client find products
 	private JPanel pnFindSe;
+	private JTextField txtFindSe;
+	private JTextField txtPriceSe;
+	private JTextField txtTypeSe;
 
+	// info products, which client found	
 	private JPanel pnInfo;
-
-	private JPanel pnCart;
-
-	private DefaultTableModel dftCheckBuy;
+	private DefaultTableModel dftCheckBuy=null;
 	private JTable tableCheckBuy;
 	protected boolean flatSe=false;
+	private JButton btnAddCart;
+
+	//client selects products to add to the cart
+	private JPanel pnCart;
+	private DefaultTableModel tableCart=null;
+	private JTable jtableCart;
+	private JButton btnOrder;
+	private JButton btnDeleteCart;
+	private JTextField txtSum;
+	int sumBuy=0;
+
+	// client enters information and makes a purchase
+	private JPanel pnInfoClient;
+	private JTextField txtNameCl;
+	private JTextField txtMail;
+	private JTextField txtAddress;
+	private JTextField txtPhone;
+	private JCheckBox reg;
+	private JButton btnBuyPr;
+
+	private JPanel pnInfoThanks;
 
 
 
@@ -682,7 +680,7 @@ public class WH extends JFrame {
 		pnInfoClient.setVisible(false);
 
 
-		JLabel jlabNameCl = new JLabel("Your name");
+		JLabel jlabNameCl = new JLabel("Your name:");
 		jlabNameCl.setBounds(17, 24, 69, 14);
 		pnInfoClient.add(jlabNameCl);
 		txtNameCl = new JTextField(10);
@@ -721,7 +719,6 @@ public class WH extends JFrame {
 		btnBuyPr.setEnabled(false);
 
 	}
-
 
 	private void addEvents() {
 
@@ -1183,8 +1180,8 @@ public class WH extends JFrame {
 					tableCart.addRow(vec);
 
 
-					sum+= Integer.parseInt(pr.getNumber())*Integer.parseInt(pr.getPrice());
-					txtSum.setText(sum+"");
+					sumBuy+= Integer.parseInt(pr.getNumber())*Integer.parseInt(pr.getPrice());
+					txtSum.setText(sumBuy+"");
 
 				}
 			}
@@ -1204,10 +1201,10 @@ public class WH extends JFrame {
 							"delete", JOptionPane.YES_NO_OPTION);
 					if (ret==JOptionPane.YES_OPTION)
 					{
-						sum-= Integer.parseInt(tableCart.getValueAt(row, 5)+"");
+						sumBuy-= Integer.parseInt(tableCart.getValueAt(row, 5)+"");
 						tableCart.removeRow(row);
 						listCart.remove(row);
-						txtSum.setText(sum+"");
+						txtSum.setText(sumBuy+"");
 
 					}
 					else
@@ -1277,6 +1274,7 @@ public class WH extends JFrame {
 
 		});
 	}
+
 	protected void saveBill(Client cl) {
 		// TODO Auto-generated method stub
 		JFileChooser chooser= new JFileChooser();
@@ -1322,6 +1320,7 @@ public class WH extends JFrame {
 		dftClient.addRow(vec);
 
 	}
+
 	protected void addTableValue(DefaultTableModel dtfTable, String strOK,int i) {
 		// TODO Auto-generated method stub
 
